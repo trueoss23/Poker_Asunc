@@ -1,6 +1,7 @@
 from cards import deck
 import time
 from functools import wraps
+import multiprocessing
 
 
 def timeit(func):
@@ -99,9 +100,26 @@ def comparecombs(h1, h2):
 
 
 @timeit
-def result():
-    for i in range(1_330_000):
+def calc_options():
+    for i in range(100_000):
         comparecombs('2c 5c 3c 4c 5h 7c Ad', 'Ac Ac 3c 4c 5h 7c 6d')
 
 
-result()
+def tmp_func():
+    for i in range(100_000):
+        comparecombs('2c 5c 3c 4c 5h 7c Ad', 'Ac Ac 3c 4c 5h 7c 6d')
+
+
+@timeit
+def paralel_calc_options():
+    processes = []
+    for i in range(8):
+        proc = multiprocessing.Process(target=tmp_func)
+        processes.append(proc)
+        proc.start()
+    for elem in processes:
+        elem.join()
+
+
+paralel_calc_options()
+calc_options()
